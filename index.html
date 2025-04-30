@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>리버사이드교회 주보</title>
+<style>
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    padding: 20px;
+  }
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .title {
+    font-weight: bold;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  .kakao-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+  }
+  .kakao-button {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: #FEE500;
+    border-radius: 4px;
+    padding: 8px 12px;
+    border: none;
+  }
+  .talk-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+  }
+  .error-message {
+    color: red;
+    margin-top: 10px;
+    display: none;
+    font-size: 14px;
+  }
+  .preview-image {
+    max-width: 250px;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- 제목은 한 번만 표시 -->
+  <div class="title">리버사이드교회 주보보</div>
+  
+  <!-- 썸네일 미리보기 -->
+  <img src="https://blog.kakaocdn.net/dn/G0xuP/btsNFtNjmzN/Oto5EiiQvrKip8BqYdzMpk/img.png" alt="주보">
+ 
+  
+  <!-- 카카오톡 버튼들 -->
+  <div class="kakao-buttons">
+    <button class="kakao-button" onclick="sendDefaultLink()">
+      <img src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png" alt="카카오톡 공유" class="talk-icon">
+      기본 공유하기
+    </button>
+    
+    <button class="kakao-button" onclick="sendTemplateLink()">
+      <img src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png" alt="카카오톡 템플릿 공유" class="talk-icon">
+      템플릿 공유하기
+    </button>
+  </div>
+  
+  <!-- 오류 메시지 표시 영역 -->
+  <div id="error-message" class="error-message"></div>
+</div>
+
+<!-- Kakao SDK를 body 끝부분에 로드 -->
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.5.0/kakao.min.js" 
+      integrity="sha384-kYPsUbBPlktXsY6/oNHSUDZoTX6+YI51f63jCPEIPFP09ttByAdxd2mEjKuhdqn4" 
+      crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+  // 티켓 URL 상수 정의
+  const TICKET_URL_27 = 'https://daroo2314.github.io/webzine-1st/';
+  const TICKET_URL_28 = 'https://daroo2314.github.io/webzine-1st/';
+  
+  // 이미지 URL - 명시적으로 500x800 크기 지정
+  const IMAGE_URL = 'https://img1.daumcdn.net/thumb/R500x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcnoXOG%2FbtsNbL877e9%2FgkvIYjSbx70KIo4hv4GbgK%2Fimg.png';
+  
+  // 템플릿 ID
+  const TEMPLATE_ID = 119434;
+  
+  // 에러 표시 함수
+  function showError(message) {
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) {
+      errorElement.innerText = message;
+      errorElement.style.display = 'block';
+    }
+    console.error('에러:', message);
+  }
+  
+  // Kakao SDK 초기화 함수 - 한 번만 실행되도록 보장
+  let kakaoInitialized = false;
+  
+  function initKakao() {
+    if (kakaoInitialized) return true;
+    
+    try {
+      if (!Kakao) {
+        showError('Kakao SDK가 로드되지 않았습니다.');
+        return false;
+      }
+      
+      // 이미 초기화되었는지 확인
+      if (Kakao.isInitialized()) {
+        kakaoInitialized = true;
+        return true;
+      }
+      
+      // 초기화
+      Kakao.init('2d82bc75c7b0cee9feeaa24894df4beb');
+      kakaoInitialized = Kakao.isInitialized();
+      
+      if (!kakaoInitialized) {
+        showError('Kakao SDK 초기화에 실패했습니다.');
+        return false;
+      }
+      
+      return true;
+    } catch (e) {
+      showError('Kakao SDK 초기화 중 오류 발생: ' + e.message);
+      return false;
+    }
+  }
+  
+  // 기본 공유하기 함수
+  function sendDefaultLink() {
+    if (!initKakao()) return;
+    
+    try {
+      Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: "1st DAROO WEBZINE",
+          description: 'APRIL 2025',
+          imageUrl: IMAGE_URL,
+          imageWidth: 500,
+          imageHeight: 800,
+          link: {
+            mobileWebUrl: TICKET_URL_28,
+            webUrl: TICKET_URL_28
+          }
+        },
+        buttons: [
+          {
+            title: 'VIEW',
+            link: {
+              mobileWebUrl: TICKET_URL_27,
+              webUrl: TICKET_URL_27
+            }
+          },
+          {
+            title: 'VISIT',
+            link: {
+              mobileWebUrl: TICKET_URL_28,
+              webUrl: TICKET_URL_28
+            }
+          }
+        ]
+      });
+    } catch (e) {
+      showError('기본 공유하기 실패: ' + e.message);
+    }
+  }
+  
+  // 템플릿 공유하기 함수
+  function sendTemplateLink() {
+    if (!initKakao()) return;
+    
+    try {
+      Kakao.Share.sendCustom({
+        templateId: TEMPLATE_ID,
+        templateArgs: {
+          'title': "1st DAROO WEBZINE",
+          'description': 'APRIL 2025',
+          'imageUrl': IMAGE_URL,
+          'ticket_url_27': TICKET_URL_27,
+          'ticket_url_28': TICKET_URL_28
+        }
+      });
+    } catch (e) {
+      showError('템플릿 공유하기 실패: ' + e.message);
+    }
+  }
+</script>
+</body>
+</html>
